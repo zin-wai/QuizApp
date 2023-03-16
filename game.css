@@ -1,0 +1,25 @@
+.chioce-container {
+    width: 100%;
+    display: flex;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    border: 0.1rem solid rgba(86, 165, 235, 0.25);
+    background-color: white;
+}
+
+.cioce-container:hover {
+    cursor: pointer;
+    box-shadow: 0 0.4rem 1.4rem 0 rgba(86, 165, 235, 0.25);
+    transform: translateY(-0.1rem);
+    transition: transform 150ms;
+}
+
+.chioce-prefix {
+    background-color: #56a5eb;
+    color: white;
+    padding: 1.5rem 2.5rem;
+}
+
+.chioce-text {
+    padding: 1.5rem;
+}
