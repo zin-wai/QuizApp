@@ -4,7 +4,8 @@ const choices = Array.from(document.getElementsByClassName("chioce-text"));
 const progressText = document.getElementById("progressText");
 const scoreText = document.getElementById("score");
 const progressBarFull = document.getElementById("progressBarFull");
-
+const loader = document.getElementById('loader');
+const game = document.getElementById('game');
 // console.log(chioces);
 
 let currentQuestion = {};
@@ -15,16 +16,32 @@ let availableQuestions = [];
 
 let questions = [];
 
-fetch('questions.jsson').then((res) => {
-        console.log(res);
-        return res.json();
-    })
+fetch("https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple").then((res) => {
+    console.log(res);
+    return res.json();
+})
     .then(loadedQuestions => {
-        console.log(loadedQuestions);
-        questions = loadedQuestions;
+        console.log(loadedQuestions.results);
+        loadedQuestions.results.map(loadedQuestion => {
+            const formattedQuestion = {
+                question: loadedQuestion.question
+            };
+
+            const answerChioces = [...loadedQuestion.incorrect_answers];
+            formattedQuestion.answer = Math.floor(Math.random() * 3) + 1;
+            answerChioces.splice(formattedQuestion.answer - 1, 0, loadedQuestion.correct_answer);
+
+            answerChioces.forEach((chioce, index) => {
+                formattedQuestion["chioce" + (index + 1)] = chioce;
+            });
+            return formattedQuestion;
+        });
+        // questions = loadedQuestions;
+        game.classList.remove('hidden');
+        loader.classList.add('hidden');
         startGame();
     })
-    .catch(err =>{
+    .catch(err => {
         console.log(err);
     });
 
@@ -38,6 +55,8 @@ startGame = () => {
     availableQuestions = [...questions];
     // console.log(availableQuestions);
     getNewQuestion();
+    game.classList.remove('hidden');
+    loader.classList.add('hidden');
 };
 
 getNewQuestion = () => {
