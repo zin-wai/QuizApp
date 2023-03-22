@@ -1,5 +1,5 @@
 const question = document.getElementById("question");
-const choices = Array.from(document.getElementsByClassName("chioce-text"));
+const chioces = Array.from(document.getElementsByClassName("chioce-text"));
 // const questionCounterText = document.getElementById("questionCounter");
 const progressText = document.getElementById("progressText");
 const scoreText = document.getElementById("score");
@@ -17,26 +17,34 @@ let availableQuestions = [];
 let questions = [];
 
 fetch("https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple").then((res) => {
-    console.log(res);
+    // console.log(res);
     return res.json();
 })
     .then(loadedQuestions => {
-        console.log(loadedQuestions.results);
-        loadedQuestions.results.map(loadedQuestion => {
+        // console.log(loadedQuestions.results);
+        questions = loadedQuestions.results.map(loadedQuestion => {
             const formattedQuestion = {
-                question: loadedQuestion.question
+                question: loadedQuestion.question,
             };
 
             const answerChioces = [...loadedQuestion.incorrect_answers];
-            formattedQuestion.answer = Math.floor(Math.random() * 3) + 1;
-            answerChioces.splice(formattedQuestion.answer - 1, 0, loadedQuestion.correct_answer);
+            formattedQuestion.answer = Math.floor(Math.random() * 4) + 1;
+            // console.log(formattedQuestion.answer);
+
+            answerChioces.splice(
+                formattedQuestion.answer - 1,
+                0,
+                loadedQuestion.correct_answer,
+            );
 
             answerChioces.forEach((chioce, index) => {
-                formattedQuestion["chioce" + (index + 1)] = chioce;
+                formattedQuestion['chioce' + (index + 1)] = chioce;
             });
+
             return formattedQuestion;
+
         });
-        // questions = loadedQuestions;
+        //     // questions = loadedQuestions;
         game.classList.remove('hidden');
         loader.classList.add('hidden');
         startGame();
@@ -60,9 +68,10 @@ startGame = () => {
 };
 
 getNewQuestion = () => {
-    if (availableQuestions.length === 0 || questionCounter >= MAX_QUESTIONS) {
+    if (questionCounter >= MAX_QUESTIONS) {
         localStorage.setItem("mostRecentScore", score);
         // go to the end page
+        // console.log('done')
         return window.location.assign('./end.html');
     }
 
@@ -77,9 +86,9 @@ getNewQuestion = () => {
     currentQuestion = availableQuestions[questionIndex];
     question.innerText = currentQuestion.question;
 
-    choices.forEach(choice => {
-        const number = choice.dataset["number"];
-        choice.innerText = currentQuestion["choice" + number];
+    chioces.forEach(chioce => {
+        const number = chioce.dataset["number"];
+        chioce.innerText = currentQuestion["chioce" + number];
     });
 
     availableQuestions.splice(questionIndex, 1);
@@ -87,14 +96,14 @@ getNewQuestion = () => {
     acceptingAnswers = true;
 };
 
-choices.forEach(chioce => {
+chioces.forEach(chioce => {
     chioce.addEventListener("click", e => {
         // console.log(e.target);
         if (!acceptingAnswers) return;
 
         acceptingAnswers = false;
-        const selectedChoice = e.target;
-        const selectedAnswer = selectedChoice.dataset["number"];
+        const selectedChioce = e.target;
+        const selectedAnswer = selectedChioce.dataset["number"];
 
         console.log(selectedAnswer == currentQuestion.answer);
 
@@ -112,10 +121,10 @@ choices.forEach(chioce => {
             incrementScore(CORRECT_BONUS);
         }
 
-        selectedChoice.parentElement.classList.add(classToApply);
+        selectedChioce.parentElement.classList.add(classToApply);
 
         setTimeout(() => {
-            selectedChoice.parentElement.classList.remove(classToApply);
+            selectedChioce.parentElement.classList.remove(classToApply);
             getNewQuestion();
         }, 1000);
     });
